@@ -20,15 +20,16 @@ def preprocess_image(image):
 def classify_image(image):
     img = preprocess_image(image)
     prediction = model.predict(img)
+    confidence = prediction[0] * 100
     if prediction[0] > 0.5:
         class_index = 0
     else:
         class_index = 1
 
     if class_index == 0:
-        return 'Ambulance'
+        return 'Ambulance', confidence
     else:
-        return 'Vehicle'
+        return 'Vehicle', confidence
 
 def main():
     st.title("Ambulance and Vehicle Image Classification")
@@ -39,13 +40,14 @@ def main():
     if uploaded_file is not None:
         # Save the uploaded image to a temporary directory
         image = Image.open(uploaded_file)
-        result = classify_image(image)
+        result, confidence = classify_image(image)
 
         # Display the uploaded image
         st.image(image, caption='Uploaded Image', use_column_width=True)
 
-        # Show the prediction
+        # Show the prediction and confidence
         st.write(f"Prediction: {result}")
+        st.write(f"Confidence: {confidence:.2f}%")
 
 if __name__ == '__main__':
     main()
